@@ -1,0 +1,1 @@
+echo "`date +'%F %T'` my name is $0"

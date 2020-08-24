@@ -1,0 +1,56 @@
+### 检查是不是CentOS7的系统
+- name: "check system version"
+  shell: /bin/true
+  when:
+    - ansible_facts['lsb']['id'] == "CentOS"
+    - ansible_facts['lsb']['major_release'] == "7"
+  register: system_ok
+### 拉取通用目录monitor、hadoop等
+- include_role:
+    name: public
+  vars:
+    src_ip: "{{ src_ip }}"
+  when: system_ok is succeeded
+### 检查新机器是否有独立的/data盘
+- name: "show mount"
+  #shell: "echo {{ item.key }}"
+  shell: /bin/true
+  #loop: "{{ ansible_facts['device_links']['uuids']|dict2items }}"
+  loop: "{{ ansible_facts['mounts'] }}"
+  when: 
+    #- item.key.find('nvme') == 0
+    - system_ok is succeeded
+    - item['mount'] == "/data"
+  register: is_data
+### 检查数据源机器的/data/update_data是不是目录
+- name: "check src update_data is dir"
+  shell: rsync {{ src_ip }}::root/data/update_data | awk '{if($1~/^d/) print 1;else print 0}'
+  register: is_dir
+### 检查数据源机器的/data/update_data是不是目录
+- name: "check src update_data is link"
+  shell: rsync {{ src_ip }}::root/data/update_data | awk '{if($1~/^l/)print 1;else print 0}'
+  register: is_link
+### 数据源机器的/data/update_data是目录，新机器没有/data盘
+- name: 'dir_to_link'
+  shell:  echo "rsync -aP {{ src_ip }}::root/data/update_data /search/odin/update_data --exclude=data --exclude=index && ln -s /search/odin/update_data /data/update_data"
+  async: 86400
+  poll: 0
+  when: 
+    - is_dir is succeeded
+    - is_data is failed
+### 数据源机器的/data/update_data是软连，新机器有/data盘
+- name: 'link_to_dir'
+  shell:  echo "mkdir /data/update_data/ && rsync -aP {{ src_ip }}::root/data/update_data /data/update_data --exclude=data --exclude=index"
+  async: 86400
+  poll: 0
+  when: 
+    - is_link is succeeded
+    - is_data is succeeded   
+### 数据源机器的/data/update_data是目录，新机器有/data盘
+- name: 'dir_to_dir'
+  shell:  echo "mkdir /data/update_data/ && rsync -aP {{ src_ip }}::root/data/update_data /data/update_data --exclude=data --exclude=index"
+  async: 86400
+  poll: 0
+  when: 
+    - is_dir is succeeded
+    - is_data is succeeded  

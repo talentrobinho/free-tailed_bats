@@ -1,0 +1,14 @@
+---
+  - hosts: all
+    remote_user: root
+    #gathering: smart
+    gather_facts: no
+    tasks:
+      #- include_role:
+      #    name: retriever_server
+      #  vars:
+      #    src_ip: "{{ src_ip }}"
+      - include_role:
+          name: "check_business"
+        vars:
+          items: "{{ items }}"

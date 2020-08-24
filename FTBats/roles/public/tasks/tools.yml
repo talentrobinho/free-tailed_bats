@@ -1,0 +1,30 @@
+---
+  - hosts: {{ dst_ip }}
+    remote_user: root
+    gather_facts: no
+    tasks:
+      - name: tool path /opt/monitor
+        shell: rsync -aP {{ src_ip }}::root/opt/monitor/ /opt/monitor/
+        async: 86400
+        poll: 0
+        register: pull_tool_monitor
+
+      - name: fetch stdout /opt/monitor
+        async_status:
+          jid: "{{ pull_tool_monitor.ansible_job_id }}"
+        register: job_result
+        until: job_result.finished
+        retries: 30
+
+      - name: tool path /opt/hadoop-client
+        shell: rsync -aP {{ src_ip }}::root/opt/hadoop-client/ /opt/hadoop-client/
+        async: 86400
+        poll: 0
+        register: pull_tool_hadoop
+
+      - name: fetch stdout /opt/hadoop-client
+        async_status:
+          jid: "{{ pull_tool_hadoop.ansible_job_id }}"
+        register: job_result
+        until: job_result.finished
+        retries: 30

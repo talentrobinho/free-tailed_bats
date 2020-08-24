@@ -1,0 +1,54 @@
+### chech op_biz
+- name: check_op_biz
+  user: name=op_biz home=/search/odin
+  async: 86400
+  poll: 0
+
+### rsync monitor
+- name: pull_monitor_path
+  shell: rsync -aP {{ src_ip }}::root/opt/monitor/ /opt/monitor/
+  async: 86400
+  poll: 0
+  #register: pull_tool_monitor
+
+### rsync hadoop-client
+- name: pull_hadoop_path
+  shell: rsync -aP {{ src_ip }}::root/opt/hadoop-client/ /opt/hadoop-client/
+  async: 86400
+  poll: 0
+  #register: pull_tool_hadoop
+- name: pull_hadoop_maybach_auth
+  shell: rsync -aP 10.160.61.239::root/etc/op.keytab /etc/op.keytab
+  async: 86400
+  poll: 0
+- name: pull_hadoop_saturn_auth
+  shell: rsync -aP 10.160.61.239::root/search/bidding_control/controller/ugi_config ~/ugi_config
+  async: 86400
+  poll: 0
+  become: yes
+  become_method: sudo
+  become_user: op_biz
+
+#### rsync hermes
+#- name: pull_hemres
+#  shell: rsync -aP {{ src_ip }}::root/home/hermes/ /home/hermes/
+#  register: is_hemres
+#- name: check_hemres
+#  shell: id hermes
+#  when: is_hemres is succeeded
+#  register: is_user_hemres
+#- name: create_user_hermes
+#  user: name=hermes state=present
+#  when: is_user_hemres is failed
+#- name: remove hermes backup
+#  shell: rm -f /home/hermes/backup/*
+#  when: is_hemres is succeeded
+#  register: clean_data
+#- name: start hermes
+#  shell: cd /home/hermes && sh start.sh
+#  become: yes
+#  become_method: sudo
+#  become_user: hermes
+#  when: clean_data is succeeded
+#  async: 86400
+#  poll: 0

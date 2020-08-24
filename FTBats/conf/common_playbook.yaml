@@ -1,0 +1,9 @@
+---
+  - hosts: all
+    remote_user: root
+    gather_facts: no
+    tasks:
+      - name: rsync /opt/monitor
+        shell: rsync -aP {{ src_ip }}::root/opt/monitor/ /opt/monitor
+      - name: rsync /opt/hadoop-client
+        shell: rsync -aP {{ src_ip }}::root/opt/hadoop-client/ /opt/hadoop-client/

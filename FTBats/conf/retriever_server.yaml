@@ -1,0 +1,67 @@
+RetrieverServer:
+    bin: retriever_server
+    work_path: /search/odin
+    exclude_path:
+        - log
+        - bak
+        - debug
+    hermes_path: /home/hermes
+    start_user: op_biz
+    other_user:
+        - 
+          - hermes
+          - /home/hemes
+        - 
+          - adwl
+          - /search/dev
+    log_collection: 
+        -
+            log_name: access_log
+            hadoop_path: /data/LogCenter/rs_uc
+            hadoop_save: 30
+        - 
+            log_name: ie_log
+            hadoop_path: /data/LogCenter/rs_uc
+            hadoop_save: 100
+    data_flow_path:
+        - /data/update_data
+    data_flow_exclude_path:
+        - data
+        - index
+    monitor_path: /opt/monitor
+    hadoop_path: /opt/hadoop-client
+    system_version: CentOS 7.4
+    cron_task:
+        - root
+        - op_biz
+        - hermes
+    business_item:
+        -
+            script_name: qps
+            script_path: /tmp/monitor_qps.sh
+        -
+            script_name: timeout
+            script_path: /tmp/monitor_timeout.sh
+    server_chain:
+        -
+            upstream_service: 
+                - BiddingServer
+            downstream_service: 
+                - QualityServer
+                - SunUpdateServer
+                - QueryExtendServer
+    personnel_information:
+        -
+            name: lizhansheng
+            group: adto
+            phone: 18500847064
+            email: lizhansheng@sogou-inc.com
+        -
+            name: songwanbo
+            group: adto
+            phone: 18611361485
+            email: songwanbo@sogou-inc.com
+    machine_package:
+        - K4
+        - K6
+        - K7

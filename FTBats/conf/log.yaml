@@ -1,0 +1,23 @@
+version: 1
+formatters:
+  simple:
+    format: '%(asctime)s - file:%(filename)s - line:%(lineno)s - %(message)s'
+  detail:
+    format: '[%(asctime)s][%(levelname)s][file:%(filename)s][func:%(funcName)s][line:%(lineno)s][col:%(levelno)s] [%(message)s]'
+handlers:
+  console:
+    class: logging.StreamHandler
+    level: DEBUG
+    formatter: detail
+    stream: ext://sys.stdout
+  logfile:
+    class: logging.handlers.RotatingFileHandler
+    level: DEBUG
+    formatter: detail
+    filename: /tmp/ftbats.log
+
+loggers:
+  ftbats_log:
+    level: DEBUG
+    handlers: [console, logfile]
+    propagate: yes

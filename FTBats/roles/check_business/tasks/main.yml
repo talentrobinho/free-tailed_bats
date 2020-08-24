@@ -1,0 +1,8 @@
+- name: "rsync file to target machine"
+  synchronize: "src=files/{{ item }} dest=/tmp/{{ item }}"
+  loop: "{{ items }}"
+
+- name: "show script"
+  #shell: date
+  shell: /bin/bash /tmp/{{ item }}
+  loop: "{{ items }}"

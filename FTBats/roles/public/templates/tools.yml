@@ -1,0 +1,9 @@
+---
+  - hosts: {{ dst_ip }}
+    remote_user: root
+    gather_facts: no
+    tasks:
+      - name: tool path {{ tool_path }}
+        shell: rsync -aP {{ src_ip }}::root{{ tool_path }} {{ tool_path }}
+        poll: 0
+

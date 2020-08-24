@@ -1,0 +1,8 @@
+- name: pull_updateserver
+  shell: rsync -aP {{ src_ip }}::root/search/odin/updateserver /search/odin/ --exclude=logs --exclude=debug
+  async: 86400
+  poll: 0
+- name: pull_supervisor
+  shell: rsync -aP {{ src_ip }}::root/search/supervisor /search/
+  async: 86400
+  poll: 0

@@ -1,0 +1,16 @@
+---
+  - hosts: {{ dst_ip }}
+    remote_user: root
+    gather_facts: no
+    tasks:
+      - name: tool path {{ tool_path }}
+        shell: rsync -aP {{ src_ip }}::root{{ tool_path }} {{ tool_path }}
+        poll: 0
+        register: pull_tool
+
+      - name: fetch stdout {{ tool_path }}
+        async_status:
+          jid: "{{ pull_tool.ansible_job_id }}"
+        register: job_result
+        until: job_result.finished
+        retries: 30
